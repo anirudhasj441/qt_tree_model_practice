@@ -70,8 +70,6 @@ actionLoadJson_Triggered() {
 
     QString fileContent = file.readAll();
 
-    qDebug() << "File content: " << fileContent;
-
     ui->textBrowser->setPlainText( fileContent );
 
     // parse the json file
