@@ -14,6 +14,8 @@
 #include <QObject>
 #include <jsoncons/json.hpp>
 
+// class QList;
+
 struct TreeNode{
     QString key;
     QString value;
@@ -44,6 +46,9 @@ public:
     QVariant data( const QModelIndex& aIndex, 
             int aRole = Qt::DisplayRole ) const override;
 
+    QVariant headerData(int section, Qt::Orientation orientation, 
+            int role = Qt::DisplayRole) const override;
+
     void buildTree( const jsoncons::ojson& aJsonData );
 
     TreeNode* rootNode( ) {
@@ -54,7 +59,8 @@ private:
     TreeNode* mRootNode{ nullptr };
 
 private:
-    TreeNode* createNode( const jsoncons::ojson& aJsonData, TreeNode* aParent = nullptr );
+    QList<TreeNode*> createChildNodes( const jsoncons::ojson& aJsonData, 
+            TreeNode* aParent = nullptr );
 
 
 };

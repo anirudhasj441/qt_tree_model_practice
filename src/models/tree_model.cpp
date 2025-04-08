@@ -1,4 +1,3 @@
-#include "tree_model.h"
 /// @file tree_model.cpp
 /// Implementation for the TreeModel class.
 ///
@@ -9,6 +8,7 @@
 /// https://www.codingdevil.in/
 
 #include "tree_model.h"
+#include <QList>
 
 TreeModel::
 TreeModel( QObject *aParent ) : QAbstractItemModel( aParent ) {
@@ -27,8 +27,6 @@ TreeModel::
 
 QModelIndex TreeModel::
 index( int aRow, int aColumn, const QModelIndex &aParent ) const {
-    if( !hasIndex( aRow, aColumn, aParent ) ) { return QModelIndex(); }
-
     TreeNode* node;
 
     node = aParent.isValid() ? 
@@ -38,7 +36,6 @@ index( int aRow, int aColumn, const QModelIndex &aParent ) const {
 
     if( node->children.size() <= aRow ) { return QModelIndex(); }
 
-
     return createIndex( aRow, aColumn, node->children.at( aRow ));
 }
 
@@ -47,7 +44,6 @@ parent( const QModelIndex& aIndex ) const {
     if( !aIndex.isValid() ) { return QModelIndex(); }
 
     TreeNode* node = static_cast<TreeNode*>( aIndex.internalPointer() );
-
     TreeNode* parentNode = node->parent;
 
     if( nullptr == parentNode || mRootNode == parentNode ) { 
@@ -86,7 +82,6 @@ data( const QModelIndex& aIndex, int aRole ) const {
 
     if( aRole == Qt::DisplayRole ) {
         if( aIndex.column() == 0 ) {
-            
             return node->key;
         } else if( aIndex.column() == 1 ) {
             return node->value;
@@ -96,57 +91,69 @@ data( const QModelIndex& aIndex, int aRole ) const {
     return QVariant();
 }
 
-TreeNode* TreeModel::
-createNode( const jsoncons::ojson& aJsonData, TreeNode* aParent ) {
-    TreeNode* parentNode = new TreeNode();
+QVariant TreeModel::
+headerData(int section, Qt::Orientation orientation, 
+        int role ) const
+{
+    if (role != Qt::DisplayRole || orientation != Qt::Horizontal) {
+        return QVariant();
+    }
 
+    switch ( section ) {
+        case 0:
+            return QString("Property");
+        case 1:
+            return QString("Value");
+        default:
+            return QVariant();
+    }
+}
+
+QList<TreeNode*> TreeModel::
+createChildNodes( const jsoncons::ojson& aJsonData, TreeNode* aParent ) {
+    QList<TreeNode*> nodes;
     if( aJsonData.is_object() ) {
         for( const auto& item : aJsonData.object_range() ) {
             TreeNode* node = new TreeNode();
-            node->parent = aParent;
-
+            
             node->key = QString::fromStdString( item.key() );
-            if(  item.value().is_object() ) {
+            node->value = QString::fromStdString( item.value().as_string());
+            node->parent = aParent;
+            node->children = QList<TreeNode*>();
+
+            if(  item.value().is_object() || item.value().is_array() ) {
                 node->value = QString("");
-                TreeNode* childNode = createNode( item.value(), node );
-                node->children.append( childNode );
-                parentNode->children.append( node );
-                continue;
+                QList<TreeNode*> children = createChildNodes( item.value(), node );
+                node->children = children;
             }
             
-            node->value = QString::fromStdString( item.value().as_string() );
-            parentNode->children.append( node );
-
+            nodes.append( node );
             
         }
-    } 
-    // else if( aJsonData.is_array() ) {
-    //     int count = 0;
-    //     for( const auto& item : aJsonData.array_range() ) {
-    //         TreeNode* node = new TreeNode();
-    //         node->parent = aParent;
+    } else if( aJsonData.is_array() ) {
+        int count = 0;
+        for( const auto& item : aJsonData.array_range() ) {
+            TreeNode* node = new TreeNode();
 
-    //         if( item.is_object() ) {
-    //             TreeNode* childNode = createNode( item, node );
-    //             node->children.append( childNode );
-    //         } else {
-    //             node->key = QString::number( count );
-    //             node->value = QString::fromStdString( item.as_string() );
-    //             count++;
-    //         }
-    //     }
-    // } 
+            node->key = QString::number( count );
+            node->value = QString::fromStdString( item.as_string());
+            node->parent = aParent;
 
-    
-    qDebug() << parentNode->children.size();
-    return parentNode;
+            if( item.is_object() ) {
+                QList<TreeNode*> children = createChildNodes( item, node );
+                node->children = children;
+            }
+
+            nodes.append( node );
+            count++;
+        }
+    }
+    return nodes;
 }
 
 void TreeModel::
 buildTree( const jsoncons::ojson& aJsonData ) {
     beginResetModel();
-
-    this->mRootNode = createNode( aJsonData, nullptr );
-
+    this->mRootNode->children = createChildNodes( aJsonData, this->mRootNode );
     endResetModel();
 } 
