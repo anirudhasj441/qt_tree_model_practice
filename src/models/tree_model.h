@@ -12,13 +12,14 @@
 
 #include <QAbstractItemModel>
 #include <QObject>
+#include <jsoncons/json.hpp>
 
 struct TreeNode{
     QString key;
     QString value;
     QList<TreeNode*> children;
     TreeNode* parent = nullptr;
-} ;
+};
 
 class TreeModel: public QAbstractItemModel {
     Q_OBJECT
@@ -31,27 +32,33 @@ public:
     ~TreeModel();
 
 public:
-    QModelIndex index( int row, int column, 
-            const QModelIndex &parent = QModelIndex() ) const override;
+    QModelIndex index( int aRow, int aColumn, 
+            const QModelIndex &aParent = QModelIndex() ) const override;
 
-    QModelIndex parent( const QModelIndex &index ) const override;
+    QModelIndex parent( const QModelIndex& aIndex ) const override;
 
-    int rowCount( const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount( const QModelIndex& aParent = QModelIndex()) const override;
 
-    int columnCount( const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount( const QModelIndex& aParent = QModelIndex()) const override;
 
-    QVariant data( const QModelIndex &index, 
-            int role = Qt::DisplayRole ) const override;
+    QVariant data( const QModelIndex& aIndex, 
+            int aRole = Qt::DisplayRole ) const override;
 
-    bool setData( const QModelIndex &index, const QVariant &value, 
-            int role = Qt::EditRole ) const override;
+    void buildTree( const jsoncons::ojson& aJsonData );
 
-    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    TreeNode* rootNode( ) {
+        return  mRootNode;
+    }
 
 private: 
     TreeNode* mRootNode{ nullptr };
 
+private:
+    TreeNode* createNode( const jsoncons::ojson& aJsonData, TreeNode* aParent = nullptr );
+
+
 };
+
 
 
 #endif

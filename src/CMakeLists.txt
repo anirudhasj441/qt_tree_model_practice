@@ -16,6 +16,7 @@ find_package(jsoncons)
 set( PRJ_SRC
     main.cpp
     gui/frm_main.cpp
+    models/tree_model.cpp
 )
 
 include_directories( ${CMAKE_SOURCE_DIR}/src )

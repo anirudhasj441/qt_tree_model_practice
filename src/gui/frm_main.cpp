@@ -9,12 +9,14 @@
 
 #include "ui_frm_main.h"
 #include "frm_main.h"
+#include "models/tree_model.h"
 #include <QTimer>
 #include <QFileDialog>
 #include <QDebug>
 #include <QString>
 #include <QStandardPaths>
 #include <QSettings>
+#include <jsoncons/json.hpp>
 
 MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ), 
         ui( new Ui::MainForm ) 
@@ -66,11 +68,24 @@ actionLoadJson_Triggered() {
     // save the last opened directory in QSettings
     settings.setValue( "lastDir", QFileInfo( fileName ).absolutePath());
 
-    QString jsonData = file.readAll();
+    QString fileContent = file.readAll();
 
-    qDebug() << "File content: " << jsonData;
+    qDebug() << "File content: " << fileContent;
 
-    ui->textBrowser->setPlainText( jsonData );
+    ui->textBrowser->setPlainText( fileContent );
+
+    // parse the json file
+
+    jsoncons::ojson jsonData = jsoncons::ojson::parse( 
+            fileContent.toStdString());
+
+    // create a tree model
+    TreeModel* model = new TreeModel( this );
+    model->buildTree( jsonData );
+
+    TreeNode* rootNode = model->rootNode();
+    
+    ui->treeView->setModel( model );
 
     file.close();
 }
