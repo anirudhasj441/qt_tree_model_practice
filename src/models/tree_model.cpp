@@ -90,9 +90,22 @@ data( const QModelIndex& aIndex, int aRole ) const {
     }
 
     if( Qt::DecorationRole == aRole ) {
-        if( aIndex.column() == 0 ) {
+        if( aIndex.column() != 0 ) {
+            return QVariant();
+        }
+        if( !node->children.isEmpty() ) {
             return node->expanded ? QIcon( ":/icons/folder-open.svg" ) :
                     QIcon( ":/icons/folder-close.svg" );
+        }
+
+        if( QMetaType::Bool == node->value.typeId()) {
+            return QIcon( ":/icons/bool.svg" );
+        }
+        if( QMetaType::Int == node->value.typeId()) {
+            return QIcon( ":/icons/int.svg" );
+        }
+        if( QMetaType::QString == node->value.typeId()) {
+            return QIcon( ":/icons/string.svg" );
         }
     }
 
@@ -125,7 +138,16 @@ createChildNodes( const jsoncons::ojson& aJsonData, TreeNode* aParent ) {
             TreeNode* node = new TreeNode();
             
             node->key = QString::fromStdString( item.key() );
-            node->value = QString::fromStdString( item.value().as_string());
+            node->value =  QString::fromStdString(item.value().as_string());
+            if( item.value().is_bool()) {
+                node->value =  item.value().as<bool>();
+            }
+            if( item.value().is_int64()) {
+                node->value =  item.value().as<int>();
+            }
+            // if( item.value().is_double()) {
+            //     node->value =  item.value().as_double();
+            // }
             node->parent = aParent;
             node->children = QList<TreeNode*>();
 

@@ -2,5 +2,8 @@
 <qresource prefix="/">
 <file>icons/folder-open.svg</file>
 <file>icons/folder-close.svg</file>
+<file>icons/bool.svg</file>
+<file>icons/int.svg</file>
+<file>icons/string.svg</file>
 </qresource>
 </RCC>
