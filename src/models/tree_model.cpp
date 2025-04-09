@@ -9,6 +9,7 @@
 
 #include "tree_model.h"
 #include <QList>
+#include <QIcon>
 
 TreeModel::
 TreeModel( QObject *aParent ) : QAbstractItemModel( aParent ) {
@@ -85,6 +86,13 @@ data( const QModelIndex& aIndex, int aRole ) const {
             return node->key;
         } else if( aIndex.column() == 1 ) {
             return node->value;
+        }
+    }
+
+    if( Qt::DecorationRole == aRole ) {
+        if( aIndex.column() == 0 ) {
+            return node->expanded ? QIcon( ":/icons/folder-open.svg" ) :
+                    QIcon( ":/icons/folder-close.svg" );
         }
     }
 

@@ -18,8 +18,9 @@
 
 struct TreeNode{
     QString key;
-    QString value;
+    QVariant value;
     QList<TreeNode*> children;
+    bool expanded{ false };
     TreeNode* parent = nullptr;
 };
 

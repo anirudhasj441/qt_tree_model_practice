@@ -16,6 +16,8 @@ namespace Ui {
     class MainForm;
 }
 
+class TreeModel;
+
 class MainForm : public QMainWindow {
     Q_OBJECT
 
@@ -27,8 +29,15 @@ public:
 private:
     Ui::MainForm* ui{ nullptr };
 
+    TreeModel* mTreeModel{ nullptr };
+
 private slots:
     void actionLoadJson_Triggered();
+
+    void treeView_Expanded( const QModelIndex& aIndex );
+
+    void treeView_Collapsed( const QModelIndex& aIndex );
+
 
 private:
     /// Function call after ui is mounted

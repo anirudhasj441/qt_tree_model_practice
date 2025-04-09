@@ -74,8 +74,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>treeView</sender>
+   <signal>expanded(QModelIndex)</signal>
+   <receiver>MainForm</receiver>
+   <slot>treeView_Expanded(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>282</x>
+     <y>197</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeView</sender>
+   <signal>collapsed(QModelIndex)</signal>
+   <receiver>MainForm</receiver>
+   <slot>treeView_Collapsed(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>132</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>285</x>
+     <y>414</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>actionLoadJson_Triggered()</slot>
+  <slot>treeView_Expanded(QModelIndex)</slot>
+  <slot>treeView_Collapsed(QModelIndex)</slot>
  </slots>
 </ui>

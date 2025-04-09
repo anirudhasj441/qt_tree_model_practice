@@ -17,6 +17,7 @@ set( PRJ_SRC
     main.cpp
     gui/frm_main.cpp
     models/tree_model.cpp
+    res/resource.qrc
 )
 
 include_directories( ${CMAKE_SOURCE_DIR}/src )

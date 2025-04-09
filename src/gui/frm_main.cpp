@@ -19,7 +19,7 @@
 #include <jsoncons/json.hpp>
 
 MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ), 
-        ui( new Ui::MainForm ) 
+        ui( new Ui::MainForm ), mTreeModel( new TreeModel( this )) 
 {
     ui->setupUi( this ); 
 
@@ -78,14 +78,27 @@ actionLoadJson_Triggered() {
             fileContent.toStdString());
 
     // create a tree model
-    TreeModel* model = new TreeModel( this );
-    model->buildTree( jsonData );
-
-    TreeNode* rootNode = model->rootNode();
+    this->mTreeModel->buildTree( jsonData );
     
-    ui->treeView->setModel( model );
+    ui->treeView->setModel( mTreeModel );
 
     file.close();
+}
+
+void MainForm::
+treeView_Expanded( const QModelIndex& aIndex ) {
+    // code to execute when tree view is expanded
+    TreeNode* node = static_cast<TreeNode*>( aIndex.internalPointer() );
+    node->expanded = true;
+    this->mTreeModel->dataChanged( aIndex, aIndex );
+}
+
+void MainForm::
+treeView_Collapsed( const QModelIndex& aIndex ) {
+    // code to execute when tree view is collapsed
+    TreeNode* node = static_cast<TreeNode*>( aIndex.internalPointer() );
+    node->expanded = false;
+    this->mTreeModel->dataChanged( aIndex, aIndex );
 }
 
 void MainForm::
