@@ -18,11 +18,15 @@
 #include <QStandardPaths>
 #include <QSettings>
 #include <jsoncons/json.hpp>
+#include <jsoncons/pretty_print.hpp>
 
 MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ), 
         ui( new Ui::MainForm ), mTreeModel( new TreeModel( this )) 
 {
     ui->setupUi( this ); 
+
+    connect( this->mTreeModel, &QAbstractItemModel::dataChanged, this,
+            &MainForm::treeModel_DataChanged );
 
     /// call onMounted after the ui is mounted
     QTimer::singleShot( 0, this, &MainForm::onMounted ); 
@@ -102,6 +106,19 @@ treeView_Collapsed( const QModelIndex& aIndex ) {
     TreeNode* node = static_cast<TreeNode*>( aIndex.internalPointer() );
     node->expanded = false;
     this->mTreeModel->dataChanged( aIndex, aIndex );
+}
+
+void MainForm::
+treeModel_DataChanged( const QModelIndex &aTopLeft, 
+        const QModelIndex &aBottomRight, const QList<int> &aRoles) 
+{
+    qDebug() << "Data changed" ;
+
+    // std::ostringstream os;
+    // jsoncons::pretty_print( this->mTreeModel->jsonData());
+
+    // ui->textBrowser->setPlainText(  
+    //         QString::fromStdString( os.str()));
 }
 
 void MainForm::

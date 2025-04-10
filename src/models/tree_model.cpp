@@ -123,6 +123,8 @@ setData( const QModelIndex& aIndex, const QVariant& aValue, int aRole ) {
         node->value = aValue;
     }
 
+    this->updateJsonValue( node->jsonPath, node->value );
+
     emit dataChanged( aIndex, aIndex );
 
     return true;
@@ -269,6 +271,16 @@ updateJsonValue( const QString& aJsonPath, const QVariant& aValue ) {
             value );
 
     return true;
+}
+
+TreeNode* TreeModel::
+rootNode( ) {
+    return mRootNode;
+}
+
+jsoncons::ojson TreeModel::
+jsonData( ) {
+    return this->mJson;
 }
 
 void TreeModel::

@@ -38,6 +38,11 @@ private slots:
 
     void treeView_Collapsed( const QModelIndex& aIndex );
 
+    void treeModel_DataChanged( const QModelIndex &topLeft, 
+            const QModelIndex &bottomRight, 
+            const QList<int> &roles = QList<int>()
+    );
+
 
 private:
     /// Function call after ui is mounted

@@ -59,9 +59,9 @@ public:
 
     void buildTree( const jsoncons::ojson& aJsonData );
 
-    TreeNode* rootNode( ) {
-        return  mRootNode;
-    }
+    TreeNode* rootNode( );
+
+    jsoncons::ojson jsonData();
 
 private: 
     TreeNode* mRootNode{ nullptr };
