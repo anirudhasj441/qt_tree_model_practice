@@ -9,7 +9,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 
-find_package(jsoncons)
+find_package(jsoncons COMPONENTS json json_pointer)
 
 
 # Add the source files
@@ -17,6 +17,7 @@ set( PRJ_SRC
     main.cpp
     gui/frm_main.cpp
     models/tree_model.cpp
+    models/tree_model_delegate.cpp
     res/resource.qrc
 )
 

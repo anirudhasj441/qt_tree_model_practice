@@ -10,6 +10,7 @@
 #include "ui_frm_main.h"
 #include "frm_main.h"
 #include "models/tree_model.h"
+#include "models/tree_model_delegate.h"
 #include <QTimer>
 #include <QFileDialog>
 #include <QDebug>
@@ -80,7 +81,9 @@ actionLoadJson_Triggered() {
     // create a tree model
     this->mTreeModel->buildTree( jsonData );
     
-    ui->treeView->setModel( mTreeModel );
+    ui->treeView->setModel( this->mTreeModel );
+
+    ui->treeView->setItemDelegate( new TreeModelDelegate( this ));
 
     file.close();
 }

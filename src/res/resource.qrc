@@ -4,6 +4,11 @@
 <file>icons/folder-close.svg</file>
 <file>icons/bool.svg</file>
 <file>icons/int.svg</file>
-<file>icons/string.svg</file>
+<file>icons/string_value.svg</file>
+<file>icons/boolean_value.svg</file>
+<file>icons/number_value.svg</file>
+<file>icons/array_value.svg</file>
+<file>icons/array_key.svg</file>
+<file>icons/object_key.svg</file>
 </qresource>
 </RCC>

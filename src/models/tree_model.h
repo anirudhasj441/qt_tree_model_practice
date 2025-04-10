@@ -13,14 +13,16 @@
 #include <QAbstractItemModel>
 #include <QObject>
 #include <jsoncons/json.hpp>
+#include <QIcon>
 
 // class QList;
-
-struct TreeNode{
+struct TreeNode {
     QString key;
     QVariant value;
     QList<TreeNode*> children;
     bool expanded{ false };
+    QIcon icon;
+    QString jsonPath;
     TreeNode* parent = nullptr;
 };
 
@@ -36,7 +38,7 @@ public:
 
 public:
     QModelIndex index( int aRow, int aColumn, 
-            const QModelIndex &aParent = QModelIndex() ) const override;
+            const QModelIndex& aParent = QModelIndex() ) const override;
 
     QModelIndex parent( const QModelIndex& aIndex ) const override;
 
@@ -46,6 +48,11 @@ public:
 
     QVariant data( const QModelIndex& aIndex, 
             int aRole = Qt::DisplayRole ) const override;
+
+    bool setData( const QModelIndex& aIndex, 
+            const QVariant& aValue, int aRole = Qt::EditRole ) override;
+
+    Qt::ItemFlags flags(const QModelIndex& aIndex) const override;
 
     QVariant headerData(int section, Qt::Orientation orientation, 
             int role = Qt::DisplayRole) const override;
@@ -58,11 +65,13 @@ public:
 
 private: 
     TreeNode* mRootNode{ nullptr };
+    jsoncons::ojson mJson;
 
 private:
     QList<TreeNode*> createChildNodes( const jsoncons::ojson& aJsonData, 
-            TreeNode* aParent = nullptr );
+            TreeNode* aParent = nullptr, QString aJsonPath = "" );
 
+    bool updateJsonValue( const QString& aJsonPath, const QVariant& aValue );
 
 };
 

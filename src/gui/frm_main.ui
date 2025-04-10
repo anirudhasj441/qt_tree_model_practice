@@ -38,7 +38,10 @@
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="propertyEditor">
+   <property name="windowTitle">
+    <string>Property Editor</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
