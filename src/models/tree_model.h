@@ -61,7 +61,7 @@ public:
 
     TreeNode* rootNode( );
 
-    jsoncons::ojson jsonData();
+    jsoncons::ojson getJson();
 
 private: 
     TreeNode* mRootNode{ nullptr };

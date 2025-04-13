@@ -28,6 +28,8 @@ MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ),
     connect( this->mTreeModel, &QAbstractItemModel::dataChanged, this,
             &MainForm::treeModel_DataChanged );
 
+    connect( this, &MainForm::fileSavedChanged, this, &MainForm::mainForm_FileSavedChanged );
+
     /// call onMounted after the ui is mounted
     QTimer::singleShot( 0, this, &MainForm::onMounted ); 
 }
@@ -63,15 +65,18 @@ actionLoadJson_Triggered() {
         return;
     }
 
+    this->mOpenFilePath = fileName;
+
     // read the json file
-    QFile file( fileName );
+    QFile file( this->mOpenFilePath );
     if ( !file.open( QFile::ReadOnly ) ) {
         qDebug() << "Could not open file for reading";
         return;
     }
 
     // save the last opened directory in QSettings
-    settings.setValue( "lastDir", QFileInfo( fileName ).absolutePath());
+    settings.setValue( "lastDir", QFileInfo( this->mOpenFilePath )
+            .absolutePath());
 
     QString fileContent = file.readAll();
 
@@ -90,6 +95,81 @@ actionLoadJson_Triggered() {
     ui->treeView->setItemDelegate( new TreeModelDelegate( this ));
 
     file.close();
+
+    this->setFileSaved( true );
+}
+
+void MainForm::
+actionSave_Triggered() {
+    if ( this->mOpenFilePath.isEmpty() ) { return; }
+
+    QFile file( this->mOpenFilePath );
+
+    if( !file.open( QFile::WriteOnly )) {
+        qDebug() << "File could not open!";
+        return;
+    }
+
+    std::ostringstream os;
+
+    os << pretty_print( this->mTreeModel->getJson() );
+
+    file.write( QString::fromStdString( os.str()).toUtf8());
+
+    file.close();
+    qDebug() << "File saved!";
+
+    this->setFileSaved( true );
+
+}
+
+void MainForm::
+actionSaveAs_Triggered() {
+    if ( this->mOpenFilePath.isEmpty() ) { return; }
+
+    QSettings settings( "CodingDevil", "JsonViewer" );
+
+    // checking if there last open dir is present in QSetting
+    QString lastDir = settings.value( 
+        "lastDir/saveAs",
+        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation)
+    ).toString();
+
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        "Save As",
+        lastDir,
+        tr("JSON Files (*.json)")
+    );
+
+    if( fileName.isEmpty()) {
+        qDebug() << "File not selected by user!!";
+
+        return;
+    }
+
+    this->mOpenFilePath = fileName;
+
+    settings.setValue( "lastDir/saveAs", QFileInfo( this->mOpenFilePath ).
+            absolutePath());
+
+    QFile file( this->mOpenFilePath );
+
+    if( !file.open( QFile::WriteOnly )) {
+        qDebug() << "File could not open!";
+        return;
+    }
+
+    std::ostringstream os;
+
+    os << pretty_print( this->mTreeModel->getJson() );
+
+    file.write( QString::fromStdString( os.str()).toUtf8());
+
+    file.close();
+
+    this->setFileSaved( true );
+    qDebug() << "File saved as: " << this->mOpenFilePath;
 }
 
 void MainForm::
@@ -114,11 +194,44 @@ treeModel_DataChanged( const QModelIndex &aTopLeft,
 {
     qDebug() << "Data changed" ;
 
-    // std::ostringstream os;
-    // jsoncons::pretty_print( this->mTreeModel->jsonData());
+    QFile file( this->mOpenFilePath );
 
-    // ui->textBrowser->setPlainText(  
-    //         QString::fromStdString( os.str()));
+    if ( !file.open( QFile::ReadOnly )) {
+        qDebug() << "File Coluld not be opened";
+        return;
+    }
+
+    jsoncons::ojson fileJson = jsoncons::ojson::parse( file.readAll());
+
+    if( this->mTreeModel->getJson() == fileJson ) {
+        qDebug() << "File not changed!";
+        return ;
+    }
+
+    file.close();
+
+    std::ostringstream os;
+    os << jsoncons::pretty_print( this->mTreeModel->getJson());
+
+    ui->textBrowser->setPlainText(  
+            QString::fromStdString( os.str()));
+
+    this->setFileSaved( false );
+}
+
+void MainForm::
+setFileSaved( bool aValue ) {
+    this->mFileSaved = aValue;
+
+    emit this->fileSavedChanged();
+}
+
+void MainForm::
+mainForm_FileSavedChanged( ) {
+    QFileInfo fileInfo( this->mOpenFilePath );
+    QString saveIndicator = this->mFileSaved ? "" : " *";
+    this->setWindowTitle( QString("Json Editor - %1 %2").arg(
+        fileInfo.completeBaseName(), saveIndicator ));
 }
 
 void MainForm::

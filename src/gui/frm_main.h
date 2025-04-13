@@ -31,8 +31,16 @@ private:
 
     TreeModel* mTreeModel{ nullptr };
 
+    QString mOpenFilePath;
+
+    bool mFileSaved{ false };
+
 private slots:
     void actionLoadJson_Triggered();
+
+    void actionSave_Triggered();
+
+    void actionSaveAs_Triggered();
 
     void treeView_Expanded( const QModelIndex& aIndex );
 
@@ -43,10 +51,18 @@ private slots:
             const QList<int> &roles = QList<int>()
     );
 
+    void mainForm_FileSavedChanged();
 
 private:
+    void setFileSaved( bool aValue ); 
+
+    void updateWindowTitle ( const QString& aTitle );
+
     /// Function call after ui is mounted
     void onMounted();
+
+signals:
+    void fileSavedChanged( );
 };
 
 #endif // FRM_MAIN_H

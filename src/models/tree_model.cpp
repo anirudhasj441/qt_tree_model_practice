@@ -117,6 +117,10 @@ setData( const QModelIndex& aIndex, const QVariant& aValue, int aRole ) {
 
     if( node == nullptr ) { return false; }
 
+    qDebug() << node->value << ":" << aValue << ":" << (node->value == aValue);
+
+    if( node->value == aValue ) { return false; }
+
     if( aIndex.column() == 0 ) {
         node->key = aValue.toString();
     } else if( aIndex.column() == 1 ) {
@@ -267,7 +271,7 @@ updateJsonValue( const QString& aJsonPath, const QVariant& aValue ) {
         return false;
     }
 
-    jsoncons::jsonpointer::add( this->mJson, aJsonPath.toStdString(), 
+    jsoncons::jsonpointer::replace( this->mJson, aJsonPath.toStdString(), 
             value );
 
     return true;
@@ -279,7 +283,7 @@ rootNode( ) {
 }
 
 jsoncons::ojson TreeModel::
-jsonData( ) {
+getJson( ) {
     return this->mJson;
 }
 
