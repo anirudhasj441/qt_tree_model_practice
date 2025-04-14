@@ -1,1 +1,22 @@
-{}
+{
+    "glossary": {
+        "title": "example", 
+        "GlossDiv": {
+            "title": "b", 
+            "GlossList": {
+                "GlossEntry": {
+                    "ID": "SGML", 
+                    "SortAs": 45.5, 
+                    "GlossTerm": "Standard Generalized Ma", 
+                    "Acronym": true, 
+                    "Abbrev": 95, 
+                    "GlossDef": {
+                        "para": "A meta-markup language, used to create markup languages such as DocBook.", 
+                        "GlossSeeAlso": ["GML", "XML"]
+                    }, 
+                    "GlossSee": "markup"
+                }
+            }
+        }
+    }
+}

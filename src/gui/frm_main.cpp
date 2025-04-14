@@ -80,8 +80,6 @@ actionLoadJson_Triggered() {
 
     QString fileContent = file.readAll();
 
-    ui->textBrowser->setPlainText( fileContent );
-
     // parse the json file
 
     jsoncons::ojson jsonData = jsoncons::ojson::parse( 
@@ -97,6 +95,13 @@ actionLoadJson_Triggered() {
     file.close();
 
     this->setFileSaved( true );
+
+    std::ostringstream os;
+
+    os << pretty_print( this->mTreeModel->getJson());
+
+    ui->textBrowser->setPlainText(  
+            QString::fromStdString( os.str()));
 }
 
 void MainForm::
@@ -231,7 +236,7 @@ mainForm_FileSavedChanged( ) {
     QFileInfo fileInfo( this->mOpenFilePath );
     QString saveIndicator = this->mFileSaved ? "" : " *";
     this->setWindowTitle( QString("Json Editor - %1 %2").arg(
-        fileInfo.completeBaseName(), saveIndicator ));
+        fileInfo.fileName(), saveIndicator ));
 }
 
 void MainForm::
