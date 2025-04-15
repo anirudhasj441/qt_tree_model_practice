@@ -70,6 +70,9 @@ private:
     /// Function call after ui is mounted
     void onMounted();
 
+protected:
+    void closeEvent( QCloseEvent* aEvent ) override ;
+
 signals:
     void fileSavedChanged( );
 };

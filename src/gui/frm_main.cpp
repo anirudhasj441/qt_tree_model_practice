@@ -17,6 +17,8 @@
 #include <QString>
 #include <QStandardPaths>
 #include <QSettings>
+#include <QMessageBox>
+#include <QCloseEvent>
 #include <jsoncons/json.hpp>
 #include <jsoncons/pretty_print.hpp>
 
@@ -111,7 +113,7 @@ actionSave_Triggered() {
     if ( this->mOpenFilePath.isEmpty() ) { return; }
 
     this->saveFile( this->mOpenFilePath );
-    
+
     qDebug() << "File saved!";
 
     this->setFileSaved( true );
@@ -235,6 +237,35 @@ saveFile( const QString aFilePath ) {
     file.close();
 
     this->setFileSaved( true );
+}
+
+void MainForm::
+closeEvent( QCloseEvent* aEvent ) {
+    // code to be executed when the main window is closed
+
+    if( this->mFileSaved ) { 
+        // if file is already saved no need to message box
+        aEvent->accept();
+        return;
+    }
+
+    int ret = QMessageBox::warning( this, "Unsaved Changes",
+            "You have unsaved changes. Do you want to save them?",
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+    if ( QMessageBox::Cancel == ret ) {
+        // user clicked cancel, ignore the close event
+        aEvent->ignore();
+        return;
+    }
+
+    if( QMessageBox::Save == ret ) {
+        // user clicked save, save the file
+        this->actionSave_Triggered();
+    }
+
+    // finally close the window
+    aEvent->accept();
 }
 
 void MainForm::
