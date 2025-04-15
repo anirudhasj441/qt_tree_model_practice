@@ -24,6 +24,8 @@ class MainForm : public QMainWindow {
 public:
     /// Constructor
     MainForm( QMainWindow* aParent = nullptr );
+
+    // Destructor
     virtual ~MainForm();
 
 private:
@@ -57,6 +59,13 @@ private:
     void setFileSaved( bool aValue ); 
 
     void updateWindowTitle ( const QString& aTitle );
+
+    /// function for savng file
+    ///
+    /// @param[ in ] aFilePath file path to save
+    ///
+    /// @return void
+    void saveFile( const QString aFilePath );
 
     /// Function call after ui is mounted
     void onMounted();

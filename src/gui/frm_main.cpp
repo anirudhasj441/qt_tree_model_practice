@@ -39,6 +39,8 @@ MainForm::
    
 }
 
+
+/////////////////////////////////// Slots //////////////////////////////////////
 void MainForm::
 actionLoadJson_Triggered() {
     // Code to execute on load json action
@@ -108,20 +110,8 @@ void MainForm::
 actionSave_Triggered() {
     if ( this->mOpenFilePath.isEmpty() ) { return; }
 
-    QFile file( this->mOpenFilePath );
-
-    if( !file.open( QFile::WriteOnly )) {
-        qDebug() << "File could not open!";
-        return;
-    }
-
-    std::ostringstream os;
-
-    os << pretty_print( this->mTreeModel->getJson() );
-
-    file.write( QString::fromStdString( os.str()).toUtf8());
-
-    file.close();
+    this->saveFile( this->mOpenFilePath );
+    
     qDebug() << "File saved!";
 
     this->setFileSaved( true );
@@ -158,22 +148,8 @@ actionSaveAs_Triggered() {
     settings.setValue( "lastDir/saveAs", QFileInfo( this->mOpenFilePath ).
             absolutePath());
 
-    QFile file( this->mOpenFilePath );
+    this->saveFile( this->mOpenFilePath );
 
-    if( !file.open( QFile::WriteOnly )) {
-        qDebug() << "File could not open!";
-        return;
-    }
-
-    std::ostringstream os;
-
-    os << pretty_print( this->mTreeModel->getJson() );
-
-    file.write( QString::fromStdString( os.str()).toUtf8());
-
-    file.close();
-
-    this->setFileSaved( true );
     qDebug() << "File saved as: " << this->mOpenFilePath;
 }
 
@@ -225,6 +201,16 @@ treeModel_DataChanged( const QModelIndex &aTopLeft,
 }
 
 void MainForm::
+mainForm_FileSavedChanged( ) {
+    QFileInfo fileInfo( this->mOpenFilePath );
+    QString saveIndicator = this->mFileSaved ? "" : " *";
+    this->setWindowTitle( QString("Json Editor - %1 %2").arg(
+        fileInfo.fileName(), saveIndicator ));
+}
+
+/////////////////////////////// Private Functions //////////////////////////////
+
+void MainForm::
 setFileSaved( bool aValue ) {
     this->mFileSaved = aValue;
 
@@ -232,11 +218,23 @@ setFileSaved( bool aValue ) {
 }
 
 void MainForm::
-mainForm_FileSavedChanged( ) {
-    QFileInfo fileInfo( this->mOpenFilePath );
-    QString saveIndicator = this->mFileSaved ? "" : " *";
-    this->setWindowTitle( QString("Json Editor - %1 %2").arg(
-        fileInfo.fileName(), saveIndicator ));
+saveFile( const QString aFilePath ) {
+    QFile file( aFilePath );
+
+    if ( !file.open( QFile::WriteOnly )) {
+        qDebug() << "File could not be opened!";
+        return;
+    }
+
+    std::ostringstream os;
+
+    os << pretty_print( this->mTreeModel->getJson() );
+
+    file.write( QString::fromStdString( os.str()).toUtf8());
+
+    file.close();
+
+    this->setFileSaved( true );
 }
 
 void MainForm::
