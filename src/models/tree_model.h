@@ -57,17 +57,33 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, 
             int role = Qt::DisplayRole) const override;
 
+    /// build the tree model from the json data
+    ///
+    /// @param[ in ] aJsonData 
+    ///
+    /// @return
     void buildTree( const jsoncons::ojson& aJsonData );
 
+    /// getter function for mRootNode
     TreeNode* rootNode( );
 
+    /// getter function for mJson
     jsoncons::ojson getJson();
 
 private: 
-    TreeNode* mRootNode{ nullptr };
-    jsoncons::ojson mJson;
+    TreeNode* mRootNode{ nullptr }; // Node instance for the Root Node.
+
+    jsoncons::ojson mJson;          // JSON data.
 
 private:
+
+    /// function to create child nodes
+    ///
+    /// @param[ in ] aJsonData JSON data
+    /// @param[ in ] aParent Parent node
+    /// @param[ in ] aJsonPath JSON path
+    ///
+    /// @return list of child nodes
     QList<TreeNode*> createChildNodes( const jsoncons::ojson& aJsonData, 
             TreeNode* aParent = nullptr, QString aJsonPath = "" );
 

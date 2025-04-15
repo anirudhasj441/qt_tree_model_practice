@@ -30,7 +30,8 @@ MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ),
     connect( this->mTreeModel, &QAbstractItemModel::dataChanged, this,
             &MainForm::treeModel_DataChanged );
 
-    connect( this, &MainForm::fileSavedChanged, this, &MainForm::mainForm_FileSavedChanged );
+    connect( this, &MainForm::fileSavedChanged, this, 
+            &MainForm::mainForm_FileSavedChanged );
 
     /// call onMounted after the ui is mounted
     QTimer::singleShot( 0, this, &MainForm::onMounted ); 
@@ -172,6 +173,14 @@ treeView_Collapsed( const QModelIndex& aIndex ) {
 }
 
 void MainForm::
+treeModel_ModelReset() {
+    qDebug() << "Model reset";
+
+    ui->textBrowser->setPlainText(  
+            QString::fromStdString( this->jsonToString( this->mTreeModel->getJson())));
+}
+
+void MainForm::
 treeModel_DataChanged( const QModelIndex &aTopLeft, 
         const QModelIndex &aBottomRight, const QList<int> &aRoles) 
 {
@@ -217,6 +226,15 @@ setFileSaved( bool aValue ) {
     this->mFileSaved = aValue;
 
     emit this->fileSavedChanged();
+}
+
+QString MainForm::
+jsonToString( const jsoncons::ojson& aJson ) const {
+    std::ostringstream os;
+
+    os << jsoncons::pretty_print( aJson );
+
+    return QString::fromStdString( os.str());
 }
 
 void MainForm::

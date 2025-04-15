@@ -53,12 +53,18 @@ private slots:
             const QList<int> &roles = QList<int>()
     );
 
+    void treeModel_ModelReset();
+
     void mainForm_FileSavedChanged();
 
 private:
-    void setFileSaved( bool aValue ); 
 
-    void updateWindowTitle ( const QString& aTitle );
+    /// function to set file saved status
+    ///
+    /// @param[ in ] aValue file saved status
+    ///
+    /// return 
+    void setFileSaved( bool aValue ); 
 
     /// function for savng file
     ///
@@ -66,6 +72,13 @@ private:
     ///
     /// @return void
     void saveFile( const QString aFilePath );
+
+    /// function to dump json to QSTring
+    ///
+    /// @param[ in ] aJson json data
+    ///
+    /// @return QString json data in string format
+    QString jsonToString( const jsoncons::ojson& aJson ) const;
 
     /// Function call after ui is mounted
     void onMounted();
