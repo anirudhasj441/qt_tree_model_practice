@@ -30,6 +30,9 @@ MainForm::MainForm( QMainWindow* aParent ) : QMainWindow( aParent ),
     connect( this->mTreeModel, &QAbstractItemModel::dataChanged, this,
             &MainForm::treeModel_DataChanged );
 
+    connect( this->mTreeModel, &QAbstractItemModel::modelReset, this,
+            &MainForm::treeModel_ModelReset );
+
     connect( this, &MainForm::fileSavedChanged, this, 
             &MainForm::mainForm_FileSavedChanged );
 
@@ -100,13 +103,6 @@ actionLoadJson_Triggered() {
     file.close();
 
     this->setFileSaved( true );
-
-    std::ostringstream os;
-
-    os << pretty_print( this->mTreeModel->getJson());
-
-    ui->textBrowser->setPlainText(  
-            QString::fromStdString( os.str()));
 }
 
 void MainForm::
@@ -177,7 +173,7 @@ treeModel_ModelReset() {
     qDebug() << "Model reset";
 
     ui->textBrowser->setPlainText(  
-            QString::fromStdString( this->jsonToString( this->mTreeModel->getJson())));
+            this->jsonToString( this->mTreeModel->getJson()));
 }
 
 void MainForm::

@@ -11,6 +11,7 @@
 #define	FRM_MAIN_H
 
 #include <QMainWindow>
+#include <jsoncons/json.hpp>
 
 namespace Ui {
     class MainForm;
